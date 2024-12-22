@@ -1,0 +1,30 @@
+{
+  "name": "trinetra_genkit",
+  "version": "1.0.0",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node lib/index.js",
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.11",
+    "@genkit-ai/core": "^0.5.11",
+    "@genkit-ai/dotprompt": "^0.5.11",
+    "@genkit-ai/firebase": "^0.5.11",
+    "@genkit-ai/flow": "^0.5.11",
+    "@genkit-ai/googleai": "^0.5.11",
+    "express": "^4.19.2",
+    "firebase-functions": "5.0.0",
+    "genkit": "^0.5.11",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
