@@ -17,49 +17,20 @@ input:
   properties:
     name: 
       type: string
+    age:
+      type: number
+    gender:
+      type: string
+      enum:
+        - male
+        - female
+        - other
     lifestyle:
       type: string
       enum: 
-        - SEDENTARY
-        - ACTIVE
-        - HECTIC
-    country:
-      type: string
-      enum: 
-        - INDIA
-        - ITALIAN
-        - AMERICAN
-    flexiNutritionPreferences:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - VEGETARIAN
-            - NON_VEGETARIAN
-            - VEGAN
-        allergies:
-          type: array
-          items:
-            type: string
-        dietaryRestrictions:
-          type: array
-          items:
-            type: string
-        spicePreferences:
-          type: number
-        sweetOrHotPreferences:
-          type: number
-    levelOfCooking:
-      type: string
-      enum:
-        - BEGINNER
-        - INTERMEDIATE
-        - ADVANCED
-    favouriteFoodItems:
-      type: array
-      items:
-        type: string
+        - sedentary
+        - active
+        - hectic
     healthGoals:
       type: array
       items:
@@ -68,7 +39,7 @@ input:
       type: array
       items:
         type: string
-    healthMetrics:
+    healthRecords:
       type: array
       items:
         type: object
@@ -77,10 +48,10 @@ input:
             type: number
           height:
             type: number
-          waterPercentage:
+          waterPercent:
             type: number
             nullable: true
-          fatPercentage:
+          fatPercent:
             type: number
             nullable: true
           boneMass:
@@ -89,8 +60,35 @@ input:
           calories:
             type: number
             nullable: true
-    budget : 
-      type : number
+    foodPreferences:
+      type: object
+      properties:
+        dietaryPreferences:
+          type: string
+          enum:
+            - vegetarian
+            - nonvegetarian
+            - vegan
+        cookingExperience:
+          type: string
+          enum: 
+            - beginner
+            - intermediate
+            - advanced
+        spiceLevel:
+          type: number
+        sweetHotLevel:
+          type: number
+        mealCount:
+          type: number
+    allergies:
+      type: array
+        items:
+          type: string
+    favouriteFoods:
+      type: array
+      items:
+        type: string
 output:
   type: object
   properties:
@@ -101,42 +99,50 @@ output:
         items:
           type: object
           properties:
-            category:
+            recipeName:
               type: string
-            items:
+            levelOfCook:
+              type: string
+              enum: 
+                - easy
+                - medium
+                - hard
+            timeRequireToCook:
+              type: string
+            macroNutrientIndex:
+              type: object
+              properties:
+                protein:
+                  type: string
+                carbs:
+                  type: string
+                calories:
+                  type: string
+            ingredients:
               type: array
               items:
-                type: object
-                properties : 
-                  name : 
-                    type : string
-                  ingredients : 
-                    type : array
-                  cutlery :
-                    type : array
-                  recipe : 
-                    type : array
-                  macroNutrientIndex :
-                    type : object
-                    properties :
-                      nutritient : 
-                        type : string
-                      value : 
-                        type : string
+                type: string
+            recipe:
+              type: array
+              items:
+                type: string
+            cutlery:
+              type: array
+              items:
+                type: string
               
                         
 --- 
 `
-Generate a menu suggestion for a week except sunday (cheat day) for {{name}} who has a {{lifestyle}} lifestyle. 
-Their preferred nutrition type is {{flexiNutritionPreferences.type}}, and they have allergies to 
-{{flexiNutritionPreferences.allergies}}, and dietary restrictions of 
-{{flexiNutritionPreferences.dietaryRestrictions}}. 
-They are at a {{levelOfCooking}} level of cooking. 
-They are living in {{country}} country.
-Their favourite foods include {{favouriteFoodItems}}.
+Generate a menu suggestion for a week except sunday (cheat day) for {{name}} of age {{age}} who has a {{lifestyle}} lifestyle is {{gender}}. 
+Their preferred nutrition type is {{foodPreferences.dietaryPreferences}}, and they have allergies to 
+{{allergies}}, and their spiceLevel is {{foodPreferences.spiceLevel}}, also their capability of consumption of sweetness/hotless is {{foodPreferences.sweetHotLevel}} (Additional information: Levels ranges between 1 to 100, the lesser the number, that means user prefers sweet and vice versa). 
+They are at a {{levelOfCooking}} level of cooking.
+Their favourite foods include {{favouriteFoods}}.
 They have the following health goals: {{healthGoals}}, and health issues: {{healthIssues}}. 
-They have the following health metrics: {{healthMetrics}}
-Give ingredients used to generate the menu should be less than the week wise budget: {{budget}}, based on their prices in {{country}}.
+They have the following health metrics: {{healthRecords}}.
+The menu should consists of six days week suggestion from Monday to Saturday, and each day consists of 3 recipe suggestions.
+Give ingredients used to generate the menu.
 Make sure the output for every food item in the menu, recipe & macro-nutritients with their values as strings, contains the ingredients and cutlery & utensils used to prepare this recipe.
 
 

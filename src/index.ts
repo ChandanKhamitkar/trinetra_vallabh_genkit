@@ -12,12 +12,6 @@ import { dotprompt } from "@genkit-ai/dotprompt";
 import { defineSecret } from "firebase-functions/params";
 import { onFlow, noAuth } from "@genkit-ai/firebase/functions";
 const googleAIapiKey = process.env.GOOGLE_GENAI_API_KEY;
-console.log('key = ', googleAIapiKey);
-
-interface TimeOfDay {
-    hour: number;
-    minutes: number;
-}
 
 enum LevelOfCooking {
     BEGINNER = "BEGINNER",
@@ -26,73 +20,45 @@ enum LevelOfCooking {
 }
 
 enum Lifestyle {
-    SEDENTARY = "SEDENTARY",
-    ACTIVE = "ACTIVE",
-    HECTIC = "HECTIC",
+    SEDENTARY = "sedentary",
+    ACTIVE = "active",
+    HECTIC = "hectic",
 }
 
-enum FlexiNutritionType {
-    VEGETARIAN = "VEGETARIAN",
-    NON_VEGETARIAN = "NON_VEGETARIAN",
-    VEGAN = "VEGAN",
+enum DietaryPreferences {
+    VEGETARIAN = "vegetarian",
+    NONVEGETARIAN = "nonvegetarian",
+    VEGAN = "vegan",
 }
 
-interface FlexiNutritionPreferences {
-    type: FlexiNutritionType;
-    spicePreferences: number;
-    sweetOrHotPreferences: number;
-    allergies: string[];
-    dietaryRestrictions: string[];
+interface FoodPreferences {
+    dietaryPreferences: DietaryPreferences;
+    cookingExperience: LevelOfCooking;
+    spiceLevel: number;
+    sweetHotLevel: number;
+    mealCount: number;
 }
 
 interface HealthMetric {
     weight: number;
     height: number;
-    waterPercentage: number | null;
-    fatPercentage: number | null;
+    waterPercent: number | null;
+    fatPercent: number | null;
     boneMass: number | null;
     calories: number | null;
-    bmi: number;
-}
-
-enum Gender {
-    Male = "Male",
-    Female = "Female",
-    Other = "Other",
-}
-
-enum Country {
-    INDIA = "INDIA",
-    AMERICA = "AMERICA",
-    ITALY = "ITALY",
-}
-
-interface UserAddress {
-    name: string;
-    doorNumber: string;
-    apartment: string;
-    city: string;
-    state: string;
-    landmark: string;
-    pincode: string;
 }
 
 interface User {
     name: string;
-    email: string;
-    address: UserAddress | null;
+    gender: string;
     age: number;
     lifestyle: Lifestyle;
-    country: string;
-    gender: string;
-    dailyRoutine: [string, TimeOfDay][];
-    levelOfCooking: LevelOfCooking;
-    numberOfDishes: number;
-    favouriteFoodItems: string[];
-    flexiNutritionPreferences: FlexiNutritionPreferences;
     healthGoals: string[];
     healthIssues: string[];
-    healthMetrics: HealthMetric[];
+    healthRecords: HealthMetric[];
+    foodPreferences: FoodPreferences;
+    allergies: string[];
+    favouriteFoods: string[];
 }
 
 configureGenkit({
@@ -127,50 +93,35 @@ export const menuSuggestionFlow = onFlow(
         name: "forMenuGeneration",
         inputSchema: z.object({
             name: z.string(),
-            email: z.string(),
-            address: z.object({
-                name: z.string(),
-                doorNumber: z.string(),
-                apartment: z.string(),
-                city: z.string(),
-                state: z.string(),
-                landmark: z.string(),
-                pincode: z.string(),
-            }).optional(),
+            gender: z.string(),
             age: z.number(),
             lifestyle: z.enum(Object.values(Lifestyle) as [string, ...string[]]),
-            country: z.enum(Object.values(Country) as [string, ...string[]]),
-            gender: z.string(),
-            dailyRoutine: z.array(
-                z.tuple([z.string(), z.object({ hour: z.number(), minutes: z.number() })])
-            ),
-            levelOfCooking: z.enum(Object.values(LevelOfCooking) as [
-                string,
-                ...string[]
-            ]),
-            numberOfDishes: z.number(),
-            favouriteFoodItems: z.array(z.string()),
-            flexiNutritionPreferences: z.object({
-                type: z.enum(
-                    Object.values(FlexiNutritionType) as [string, ...string[]]
-                ),
-                spicePreferences: z.number(),
-                sweetOrHotPreferences: z.number(),
-                allergies: z.array(z.string()),
-                dietaryRestrictions: z.array(z.string()),
-            }),
             healthGoals: z.array(z.string()),
             healthIssues: z.array(z.string()),
-            healthMetrics: z.array(
+            healthRecords: z.array(
                 z.object({
                     weight: z.number(),
                     height: z.number(),
-                    waterPercentage: z.number().optional(),
-                    fatPercentage: z.number().optional(),
+                    waterPercent: z.number().optional(),
+                    fatPercent: z.number().optional(),
                     boneMass: z.number().optional(),
                     calories: z.number().optional(),
                 })
             ),
+            foodPreferences: z.object({
+                dietaryPreferences: z.enum(
+                    Object.values(DietaryPreferences) as [string, ...string[]]
+                ),
+                cookingExperience : z.enum(Object.values(LevelOfCooking) as [
+                    string,
+                    ...string[]
+                ]),
+                spiceLevel: z.number(),
+                sweetHotLevel: z.number(),
+                mealCount: z.number(),       
+            }),
+            allergies: z.array(z.string()),
+            favouriteFoods: z.array(z.string()),
         }),
         outputSchema: z.unknown(),
         authPolicy: noAuth(),
@@ -182,13 +133,15 @@ export const menuSuggestionFlow = onFlow(
     async (subject) => {
         const {
             name,
+            gender,
+            age,
             lifestyle,
-            flexiNutritionPreferences,
-            levelOfCooking,
-            favouriteFoodItems,
             healthGoals,
             healthIssues,
-            healthMetrics,
+            healthRecords,
+            foodPreferences,
+            allergies,
+            favouriteFoods,
         } = subject;
         console.log('subject = ', subject);
         const agent = await prompt('main');
