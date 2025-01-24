@@ -40,26 +40,27 @@ input:
       items:
         type: string
     healthRecords:
-      type: array
-      items:
-        type: object
-        properties:
-          weight:
-            type: number
-          height:
-            type: number
-          waterPercent:
-            type: number
-            nullable: true
-          fatPercent:
-            type: number
-            nullable: true
-          boneMass:
-            type: number
-            nullable: true
-          calories:
-            type: number
-            nullable: true
+      type: object
+      properties:
+        weight:
+          type: number
+        height:
+          type: number
+        waterPercent:
+          type: number
+          nullable: true
+        fatPercent:
+          type: number
+          nullable: true
+        boneMass:
+          type: number
+          nullable: true
+        muscleMass:
+          type: number
+          nullable: true
+        calories:
+          type: number
+          nullable: true
     foodPreferences:
       type: object
       properties:
@@ -83,8 +84,8 @@ input:
           type: number
     allergies:
       type: array
-        items:
-          type: string
+      items:
+        type: string
     favouriteFoods:
       type: array
       items:
@@ -93,17 +94,16 @@ output:
   type: object
   properties:
     menu:
-      type: array
-      dayofweek :
-        type : array
-        items:
+      type: object
+      properties:
+        dayofWeek:
           type: object
           properties:
             recipeName:
               type: string
             levelOfCook:
               type: string
-              enum: 
+              enum:
                 - easy
                 - medium
                 - hard
@@ -120,31 +120,34 @@ output:
                   type: string
             ingredients:
               type: array
-              items:
+              items: 
                 type: string
             recipe:
               type: array
-              items:
+              items: 
                 type: string
             cutlery:
               type: array
-              items:
-                type: string
-              
-                        
+              items: 
+                type: string                      
 --- 
 `
-Generate a menu suggestion for a week except sunday (cheat day) for {{name}} of age {{age}} who has a {{lifestyle}} lifestyle is {{gender}}. 
-Their preferred nutrition type is {{foodPreferences.dietaryPreferences}}, and they have allergies to 
-{{allergies}}, and their spiceLevel is {{foodPreferences.spiceLevel}}, also their capability of consumption of sweetness/hotless is {{foodPreferences.sweetHotLevel}} (Additional information: Levels ranges between 1 to 100, the lesser the number, that means user prefers sweet and vice versa). 
-They are at a {{levelOfCooking}} level of cooking.
-Their favourite foods include {{favouriteFoods}}.
+Generate a menu suggestion for a week except sunday (cheat day) for {{name}}, who is {{age}} years old, has a {{lifestyle}} lifestyle, and identifies as {{gender}}. 
+Their preferred nutrition type is {{foodPreferences.dietaryPreferences}}, and they have allergies to {{allergies}}. Their spice tolerance level is {{foodPreferences.spiceLevel}}, also their preference for sweetness or hotness is {{foodPreferences.sweetHotLevel}} (Levels range between 1 and 100, with lower numbers indicating a preference for sweetness and higher numbers for hotness). 
+Their cooking expertise is {{foodPreferences.cookingExperience}}. Their favourite foods include {{favouriteFoods}}.
+
 They have the following health goals: {{healthGoals}}, and health issues: {{healthIssues}}. 
 They have the following health metrics: {{healthRecords}}.
-The menu should consists of six days week suggestion from Monday to Saturday, and each day consists of 3 recipe suggestions.
-Give ingredients used to generate the menu.
-Make sure the output for every food item in the menu, recipe & macro-nutritients with their values as strings, contains the ingredients and cutlery & utensils used to prepare this recipe.
 
+The menu should consist of six days of meal suggestions from Monday to Saturday. 
+For each day, include:  
+- The name of the recipe (`recipeName`), 
+- The cooking difficulty (`levelOfCook`), 
+- Time required to prepare the meal (`timeRequireToCook`),  
+- Macro-nutrient values (as strings) in the format of protein, carbs, and calories,  
+- A list of ingredients required to prepare the recipe,  
+- The step-by-step recipe instructions, and  
+- The list of cutlery and utensils needed. 
 
-Output must be in JSON format.
+Ensure the output is strictly formatted as a JSON object, matching the structure defined in the "output" schema provided above.
 `

@@ -14,145 +14,181 @@ import { onFlow, noAuth } from "@genkit-ai/firebase/functions";
 const googleAIapiKey = process.env.GOOGLE_GENAI_API_KEY;
 
 enum LevelOfCooking {
-    BEGINNER = "BEGINNER",
-    INTERMEDIATE = "INTERMEDIATE",
-    ADVANCED = "ADVANCED",
+  BEGINNER = "beginner",
+  INTERMEDIATE = "intermediate",
+  ADVANCED = "advanced",
+}
+
+enum LevelOfRecipeCook {
+  EASY = "easy",
+  MEDIUM = "medium",
+  HARD = "hard",
 }
 
 enum Lifestyle {
-    SEDENTARY = "sedentary",
-    ACTIVE = "active",
-    HECTIC = "hectic",
+  SEDENTARY = "sedentary",
+  ACTIVE = "active",
+  HECTIC = "hectic",
 }
 
 enum DietaryPreferences {
-    VEGETARIAN = "vegetarian",
-    NONVEGETARIAN = "nonvegetarian",
-    VEGAN = "vegan",
+  VEGETARIAN = "vegetarian",
+  NONVEGETARIAN = "nonvegetarian",
+  VEGAN = "vegan",
+}
+
+enum WeekDays {
+  MONDAY = "Monday",
+  TUESDAY = "Tuesday",
+  WEDNESDAY = "Wednesday",
+  THURSDAY = "Thursday",
+  FRIDAY = "Friday",
+  SATURDAY = "Saturday",
 }
 
 interface FoodPreferences {
-    dietaryPreferences: DietaryPreferences;
-    cookingExperience: LevelOfCooking;
-    spiceLevel: number;
-    sweetHotLevel: number;
-    mealCount: number;
+  dietaryPreferences: DietaryPreferences;
+  cookingExperience: LevelOfCooking;
+  spiceLevel: number;
+  sweetHotLevel: number;
+  mealCount: number;
 }
 
 interface HealthMetric {
-    weight: number;
-    height: number;
-    waterPercent: number | null;
-    fatPercent: number | null;
-    boneMass: number | null;
-    calories: number | null;
+  weight: number;
+  height: number;
+  waterPercent: number | null;
+  fatPercent: number | null;
+  boneMass: number | null;
+  calories: number | null;
+  muscleMass: number | null;
 }
 
 interface User {
-    name: string;
-    gender: string;
-    age: number;
-    lifestyle: Lifestyle;
-    healthGoals: string[];
-    healthIssues: string[];
-    healthRecords: HealthMetric[];
-    foodPreferences: FoodPreferences;
-    allergies: string[];
-    favouriteFoods: string[];
+  name: string;
+  gender: string;
+  age: number;
+  lifestyle: Lifestyle;
+  healthGoals: string[];
+  healthIssues: string[];
+  healthRecords: HealthMetric[];
+  foodPreferences: FoodPreferences;
+  allergies: string[];
+  favouriteFoods: string[];
 }
 
 configureGenkit({
-    plugins: [
-        googleAI({ apiKey: "AIzaSyAtx5N0JzyuT03hU_kZ6SWfKQUNgLuXAxg" }),
-        dotprompt({ dir: "prompts" })
-    ],
-    logLevel: "debug",
-    enableTracingAndMetrics: true,
+  plugins: [
+    googleAI({ apiKey: "AIzaSyAtx5N0JzyuT03hU_kZ6SWfKQUNgLuXAxg" }),
+    dotprompt({ dir: "prompts" }),
+  ],
+  logLevel: "debug",
+  enableTracingAndMetrics: true,
 });
 
-export const imageRetrivalTool = defineTool({
-    name: 'imageRetrival',
-    description: 'Generates and image for the recipe based on the name',
-    inputSchema: z.object({ name: z.string() }),
-    outputSchema: z.string(),
-}, async ({ name }): Promise<string> => {
-    const res = await fetch(`https://www.googleapis.com/customsearch/v1?q=${name}&cx=05a8572eddfd645dc&imgSize=XLARGE&imgType=photo&num=1&searchType=image&key=AIzaSyAtx5N0JzyuT03hU_kZ6SWfKQUNgLuXAxg`);
+// export const imageRetrivalTool = defineTool(
+//   {
+//     name: "imageRetrival",
+//     description: "Generates and image for the recipe based on the name",
+//     inputSchema: z.object({ name: z.string() }),
+//     outputSchema: z.string(),
+//   },
+//   async ({ name }): Promise<string> => {
+//     const res = await fetch(
+//       `https://www.googleapis.com/customsearch/v1?q=${name}&cx=05a8572eddfd645dc&imgSize=XLARGE&imgType=photo&num=1&searchType=image&key=AIzaSyAtx5N0JzyuT03hU_kZ6SWfKQUNgLuXAxg`
+//     );
 
-    if (res.status === 200) {
-        return (await res.json()).items[0].link;
-    }
-    else {
-        return "null";
-    }
-
-})
+//     if (res.status === 200) {
+//       return (await res.json()).items[0].link;
+//     } else {
+//       return "null";
+//     }
+//   }
+// );
 
 // Define a simple flow that prompts an LLM to generate menu suggestions.
+
 export const menuSuggestionFlow = onFlow(
-    {
-        name: "forMenuGeneration",
-        inputSchema: z.object({
-            name: z.string(),
-            gender: z.string(),
-            age: z.number(),
-            lifestyle: z.enum(Object.values(Lifestyle) as [string, ...string[]]),
-            healthGoals: z.array(z.string()),
-            healthIssues: z.array(z.string()),
-            healthRecords: z.array(
-                z.object({
-                    weight: z.number(),
-                    height: z.number(),
-                    waterPercent: z.number().optional(),
-                    fatPercent: z.number().optional(),
-                    boneMass: z.number().optional(),
-                    calories: z.number().optional(),
-                })
-            ),
-            foodPreferences: z.object({
-                dietaryPreferences: z.enum(
-                    Object.values(DietaryPreferences) as [string, ...string[]]
-                ),
-                cookingExperience : z.enum(Object.values(LevelOfCooking) as [
-                    string,
-                    ...string[]
-                ]),
-                spiceLevel: z.number(),
-                sweetHotLevel: z.number(),
-                mealCount: z.number(),       
-            }),
-            allergies: z.array(z.string()),
-            favouriteFoods: z.array(z.string()),
+  {
+    name: "forMenuGeneration",
+    inputSchema: z.object({
+      name: z.string(),
+      gender: z.string(),
+      age: z.number(),
+      lifestyle: z.enum(Object.values(Lifestyle) as [string, ...string[]]),
+      healthGoals: z.array(z.string()),
+      healthIssues: z.array(z.string()),
+      healthRecords: z.object({
+        weight: z.number(),
+        height: z.number(),
+        waterPercent: z.number().optional(),
+        fatPercent: z.number().optional(),
+        boneMass: z.number().optional(),
+        calories: z.number().optional(),
+        muscleMass: z.number().optional(),
+      }),
+      foodPreferences: z.object({
+        dietaryPreferences: z.enum(
+          Object.values(DietaryPreferences) as [string, ...string[]]
+        ),
+        cookingExperience: z.enum(
+          Object.values(LevelOfCooking) as [string, ...string[]]
+        ),
+        spiceLevel: z.number(),
+        sweetHotLevel: z.number(),
+        mealCount: z.number(),
+      }),
+      allergies: z.array(z.string()),
+      favouriteFoods: z.array(z.string()),
+    }),
+    outputSchema: z.object({
+      menu: z.object({
+        dayofWeek : z.object({
+          recipeName: z.string(),
+          levelOfCook: z.enum(
+            Object.values(LevelOfRecipeCook) as [string, ...string[]]
+          ),
+          timeRequireToCook: z.string(),
+          macroNutrientIndex: z.object({
+            protein: z.string(),
+            carbs: z.string(),
+            calories: z.string(),
+          }),
+          ingredients: z.array(z.string()),
+          recipe: z.array(z.string()),
+          cutlery: z.array(z.string()),
         }),
-        outputSchema: z.unknown(),
-        authPolicy: noAuth(),
-        // httpsOptions : {
-        //   secrets : [googleAIapiKey],
-        //   cors: true,
-        // }
+      }),
+    }),
+    authPolicy: noAuth(),
+    httpsOptions: {
+      //  secrets : [googleAIapiKey],
+      cors: "http://localhost:52114",
     },
-    async (subject) => {
-        const {
-            name,
-            gender,
-            age,
-            lifestyle,
-            healthGoals,
-            healthIssues,
-            healthRecords,
-            foodPreferences,
-            allergies,
-            favouriteFoods,
-        } = subject;
-        console.log('subject = ', subject);
-        const agent = await prompt('main');
-        // if(agent === null){ 
-        const result = await agent.generate({
-            input: subject
-        });
-        // }
-        const llmResponse = result.output();
-        return llmResponse;
-    }
+  },
+  async (subject) => {
+    const {
+      name,
+      gender,
+      age,
+      lifestyle,
+      healthGoals,
+      healthIssues,
+      healthRecords,
+      foodPreferences,
+      allergies,
+      favouriteFoods,
+    } = subject;
+    console.log("Received input for menuSuggestionFlow:", subject);
+    const agent = await prompt("main");
+    // if(agent === null){
+    const result = await agent.generate({
+      input: subject,
+    });
+    // }
+    const llmResponse = result.output();
+    return llmResponse;
+  }
 );
 
 // Start a flow server, which exposes your flows as HTTP endpoints. This call
