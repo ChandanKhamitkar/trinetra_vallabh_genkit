@@ -144,7 +144,7 @@ For each day, include:
 - The name of the recipe (`recipeName`), 
 - The cooking difficulty (`levelOfCook`), 
 - Time required to prepare the meal (`timeRequireToCook`),  
-- Macro-nutrient values (as strings) in the format of protein, carbs, and calories,  
+- Macro-nutrient values (as key : value pair) in the format of macroNutrientIndex: { protein : value, carbs: value, and calories : value } (value as string),  
 - A list of ingredients required to prepare the recipe,  
 - The step-by-step recipe instructions, and  
 - The list of cutlery and utensils needed. 

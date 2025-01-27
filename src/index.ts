@@ -121,11 +121,11 @@ export const menuSuggestionFlow = onFlow(
       healthRecords: z.object({
         weight: z.number(),
         height: z.number(),
-        waterPercent: z.number().optional(),
-        fatPercent: z.number().optional(),
-        boneMass: z.number().optional(),
-        calories: z.number().optional(),
-        muscleMass: z.number().optional(),
+        waterPercent: z.number().nullable(),
+        fatPercent: z.number().nullable(),
+        boneMass: z.number().nullable(),
+        calories: z.number().nullable(),
+        muscleMass: z.number().nullable(),
       }),
       foodPreferences: z.object({
         dietaryPreferences: z.enum(
