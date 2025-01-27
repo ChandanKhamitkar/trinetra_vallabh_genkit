@@ -149,5 +149,88 @@ For each day, include:
 - The step-by-step recipe instructions, and  
 - The list of cutlery and utensils needed. 
 
+And more importantly they "Key" names of the key value pair should strictly must be followed as below.
+{
+  menu: {
+    monday: {
+      recipeName:
+      levelOfCook:
+      timeRequireToCook:
+      macroNutrientIndex:{
+        protein:
+        carbs:
+        calories:
+      }
+      ingredients:
+      recipe:
+      cutlery:
+    },
+    tuesday: {
+      recipeName:
+      levelOfCook:
+      timeRequireToCook:
+      macroNutrientIndex:{
+        protein:
+        carbs:
+        calories:
+      }
+      ingredients:
+      recipe:
+      cutlery:
+    },
+    wednesday: {
+      recipeName:
+      levelOfCook:
+      timeRequireToCook:
+      macroNutrientIndex:{
+        protein:
+        carbs:
+        calories:
+      }
+      ingredients:
+      recipe:
+      cutlery:
+    },
+    thursday: {
+      recipeName:
+      levelOfCook:
+      timeRequireToCook:
+      macroNutrientIndex:{
+        protein:
+        carbs:
+        calories:
+      }
+      ingredients:
+      recipe:
+      cutlery:
+    },
+    friday: {
+      recipeName:
+      levelOfCook:
+      timeRequireToCook:
+      macroNutrientIndex:{
+        protein:
+        carbs:
+        calories:
+      }
+      ingredients:
+      recipe:
+      cutlery:
+    },
+    saturday: {
+      recipeName:
+      levelOfCook:
+      timeRequireToCook:
+      macroNutrientIndex:{
+        protein:
+        carbs:
+        calories:
+      }
+      ingredients:
+      recipe:
+      cutlery:
+    },
+  }
+}
 Ensure the output is strictly formatted as a JSON object, matching the structure defined in the "output" schema provided above.
 `
